@@ -1,27 +1,37 @@
-import React, {useContext, useEffect, useState} from "react";
-import { children } from "react";
+import React, { useContext, useEffect, useState, children } from "react";
 import "../firebase";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, updateProfile } from "firebase/auth";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+  updateProfile,
+} from "firebase/auth";
 
 const AuthContext = React.createContext();
 
 export function useAuth() {
-  return usecontext(AuthContext);
+  return useContext(AuthContext);
 }
 
-export function AuthProvider() {
-  const [loading, setLoading] = useState();
+export function AuthProvider({ children }) {
+  const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState();
 
   useEffect(() => {
     const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
-      setLoading(false);
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      (user) => {
+        setCurrentUser(user);
+        setLoading(false);
 
-      return unsubscribe;
-    }, [])
-})
+        return unsubscribe;
+      },
+      []
+    );
+  });
 
   // signup function
   async function signup(email, password, username) {
@@ -30,20 +40,20 @@ export function AuthProvider() {
 
     //update profile
     await updateProfile(auth.currentUser, {
-      displayName: username
+      displayName: username,
     });
 
     const user = auth.currentUser;
 
     setCurrentUser({
       ...user,
-    })
+    });
   }
-  
-  //login function 
+
+  //login function
   function login(email, password) {
     const auth = getAuth();
-    await signInWithEmailAndPassword(auth, email, password);
+    return signInWithEmailAndPassword(auth, email, password);
   }
 
   // logout function
@@ -55,10 +65,10 @@ export function AuthProvider() {
   // value
   const value = {
     currentUser,
-    signup, 
+    signup,
     login,
-    logout
-  }
+    logout,
+  };
 
   return (
     <AuthContext.Provider value={value}>
