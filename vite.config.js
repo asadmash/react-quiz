@@ -28,6 +28,9 @@ export default defineConfig(({ mode }) => {
         env.REACT_APP_MESSAGING_SENDER_ID
       ),
       "process.env.REACT_APP_APP_ID": JSON.stringify(env.REACT_APP_APP_ID),
+      "process.env.REACT_APP_DATABASE_URL": JSON.stringify(
+        env.REACT_APP_DATABASE_URL
+      ),
     },
     plugins: [react()],
   };
